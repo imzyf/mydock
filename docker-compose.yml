@@ -1,38 +1,49 @@
 version: "2"
 
 services:
-    php-fpm:
-        build: ./images/php-fpm
-        container_name: php-fpm7.1
-        volumes:
-          - ./images/php-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
-          - ./images/php-fpm/php.ini:/usr/local/etc/php/php.ini
-          - ./apps:/var/www/html
-        networks: [vpcbr]
+  php-fpm:
+    build: ./images/php-fpm
+    container_name: php-fpm7.1
+    volumes:
+      - ./images/php-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
+      - ./images/php-fpm/php.ini:/usr/local/etc/php/php.ini
+      - ./apps:/var/www/html
+    networks: [vpcbr]
 
-    nginx-app:
-        build: ./images/nginx
-        volumes:
-            - ./apps:/var/www/html
-            - ./logs/nginx:/var/log/nginx
-            - ./images/nginx/sites-available:/etc/nginx/sites-available
-        networks: [vpcbr]
-        depends_on:
-            - php-fpm
-        ports:
-            - "80:80"
-            - "8001:8001"
-            - "8002:8002"
+  nginx-app:
+    build: ./images/nginx
+    volumes:
+      - ./apps:/var/www/html
+      - ./logs/nginx:/var/log/nginx
+      - ./images/nginx/sites-available:/etc/nginx/sites-available
+    networks: [vpcbr]
+    depends_on:
+      - php-fpm
+    ports:
+      - "80:80"
+      - "8001:8001"
+      - "8002:8002"
 
-    composer:
-        build: ./images/composer
-        volumes:
-            - ./apps:/var/www/html
+  composer:
+    build: ./images/composer
+    volumes:
+      - ./apps:/var/www/html
+
+### Redis ################################################
+  redis:
+    build: ./images/redis
+    volumes:
+      - ./databases/redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      vpcbr:
+        ipv4_address: 10.0.0.63
 
 networks:
-    vpcbr:
-        driver: bridge
-        ipam:
-            config:
-                - subnet: 10.0.0.0/16
-                - gateway: 10.0.0.1
+  vpcbr:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/16
+        - gateway: 10.0.0.1

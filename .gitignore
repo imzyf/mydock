@@ -4,5 +4,6 @@
 !.docker/images/proxy/*/.gitkeep
 .env
 
+/databases
 /apps
 /logs
