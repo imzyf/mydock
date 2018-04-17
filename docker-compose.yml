@@ -2,32 +2,32 @@ version: "2"
 
 services:
     php-fpm:
-        build: ./.docker/images/php-fpm
+        build: ./images/php-fpm
         container_name: php-fpm7.1
         volumes:
-          - ./.docker/images/php-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
-          - ./.docker/images/php-fpm/php.ini:/usr/local/etc/php/php.ini
-          - ./app:/var/www/html
+          - ./images/php-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
+          - ./images/php-fpm/php.ini:/usr/local/etc/php/php.ini
+          - ./apps:/var/www/html
         networks: [vpcbr]
 
     nginx-app:
-        build: ./.docker/images/nginx
+        build: ./images/nginx
         volumes:
-            - ./app:/var/www/html
+            - ./apps:/var/www/html
             - ./logs/nginx:/var/log/nginx
-            - ./.docker/images/nginx/sites-available:/etc/nginx/sites-available
+            - ./images/nginx/sites-available:/etc/nginx/sites-available
         networks: [vpcbr]
         depends_on:
             - php-fpm
         ports:
-            - 80:80
-            - 8001:8001
-            - 8002:8002
+            - "80:80"
+            - "8001:8001"
+            - "8002:8002"
 
     composer:
-        build: ./.docker/images/composer
+        build: ./images/composer
         volumes:
-            - ./app:/var/www/html
+            - ./apps:/var/www/html
 
 networks:
     vpcbr:
@@ -35,4 +35,4 @@ networks:
         ipam:
             config:
                 - subnet: 10.0.0.0/16
-                  gateway: 10.0.0.1
+                - gateway: 10.0.0.1
