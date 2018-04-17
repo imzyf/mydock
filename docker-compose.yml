@@ -1,0 +1,38 @@
+version: "2"
+
+services:
+    php-fpm:
+        build: ./.docker/images/php-fpm
+        container_name: php-fpm7.1
+        volumes:
+          - ./.docker/images/php-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
+          - ./.docker/images/php-fpm/php.ini:/usr/local/etc/php/php.ini
+          - ./app:/var/www/html
+        networks: [vpcbr]
+
+    nginx-app:
+        build: ./.docker/images/nginx
+        volumes:
+            - ./app:/var/www/html
+            - ./logs/nginx:/var/log/nginx
+            - ./.docker/images/nginx/sites-available:/etc/nginx/sites-available
+        networks: [vpcbr]
+        depends_on:
+            - php-fpm
+        ports:
+            - 80:80
+            - 8001:8001
+            - 8002:8002
+
+    composer:
+        build: ./.docker/images/composer
+        volumes:
+            - ./app:/var/www/html
+
+networks:
+    vpcbr:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.0.0.0/16
+                  gateway: 10.0.0.1
