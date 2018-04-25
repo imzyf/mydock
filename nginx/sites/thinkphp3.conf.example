@@ -8,11 +8,19 @@ server {
     index index.php index.html index.htm;
 
     location / {
+        try_files $uri $uri/ @thinkphp;
+    }
+
+    location @thinkphp {
         rewrite ^(.*)$ /index.php?s=$1 last;
     }
 
     location ~ \.php$ {
         try_files $uri /index.php =404;
+        if (!-f $request_filename ) {
+            rewrite ^(?!(?:/index\.php$))(.+) /index.php?s=$1 last;
+            break;
+        }
         fastcgi_pass php-upstream;
         fastcgi_index index.php;
         fastcgi_buffers 16 16k;
