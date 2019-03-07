@@ -47,9 +47,9 @@ cp env-example .env
 启动并构建：
 
 ```
-docker-compose up --build -d workspace php-worker nginx redis
+docker-compose up --build -d workspace php-worker nginx redis mysql
 
-docker-compose up -d workspace php-worker nginx redis
+docker-compose up -d workspace php-worker nginx redis mysql
 ```
 
 在上一级目录
@@ -85,6 +85,34 @@ echo "<?php phpinfo(); ?>" > public/index.php
 -RUN pecl channel-update pecl.php.net && pecl install memcached mcrypt-1.0.1 && docker-php-ext-enable memcached
 +# RUN docker-php-ext-install mysqli mbstring pdo pdo_mysql tokenizer xml
 +# RUN pecl channel-update pecl.php.net && pecl install memcached mcrypt-1.0.1 && docker-php-ext-enable memcached
+```
+
+## 多项目间的通信 issues
+
+> - [Guzzle/Curl connections between multiple projects](https://github.com/laradock/laradock/issues/435)
+
+例如有两个项目：
+
+1. api project `api.test`
+2. web project `web.test` 需要访问 `api.test`
+
+这时候会遇到：
+
+```
+Failed to connect to api.test port 80: Connection refused
+```
+
+解决办法：
+
+```
+# 查看 nginx ip
+$ docker-compose exec nginx ifconfig
+```
+
+在 `docker-compose.yml` 中 `php-fpm` 下的 `extra_hosts` 中补充：
+
+```
+- "api.dev:👆 得到的 nginx ip"
 ```
 
 > Reference:

@@ -184,7 +184,6 @@ services:
         - backend
 
 
-
 ### MySQL ################################################
     mysql:
       build:
@@ -232,9 +231,6 @@ services:
       networks:
         - frontend
         - backend
-
-
-
 
 
 
