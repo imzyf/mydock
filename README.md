@@ -106,7 +106,7 @@ Failed to connect to api.test port 80: Connection refused
 
 ```
 # 查看 nginx ip
-$ docker-compose exec nginx ifconfig
+$ docker-compose exec php-fpm ping nginx
 ```
 
 在 `docker-compose.yml` 中 `php-fpm` 下的 `extra_hosts` 中补充：
