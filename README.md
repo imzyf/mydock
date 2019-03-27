@@ -2,6 +2,80 @@
 
 使用 Docker 搭建自己的开发环境。
 
+## 配置项目
+
+本地化环境设置：
+
+```
+cp env-example .env
+```
+
+启动并构建：
+
+```
+docker-compose up --build -d workspace php-worker nginx redis mysql
+
+docker-compose up -d workspace php-worker nginx redis mysql
+```
+
+返回上一级目录：
+
+```
+cd ..
+mkdir public
+echo "<?php phpinfo(); ?>" > public/index.php
+```
+
+可访问 `http://localhost` 参看效果。
+
+## 快捷命令
+
+进入 workspace bash
+
+```
+./sync.sh bash
+```
+
+## 相对于原项目的修改
+
+## issues
+
+### php-fpm 5.6 是 php-worker 报错无法继续
+
+php-worker `Dockerfile` 27 行，注释了：
+
+```
++# RUN pecl channel-update pecl.php.net && pecl install memcached mcrypt-1.0.1 && docker-php-ext-enable memcached
+```
+
+### 多项目间的通信
+
+> - [Guzzle/Curl connections between multiple projects](https://github.com/laradock/laradock/issues/435)
+
+例如有两个项目：
+
+1. api project `api.test`
+2. web project `web.test` 需要访问 `api.test`
+
+这时候会遇到：
+
+```
+Failed to connect to api.test port 80: Connection refused
+```
+
+解决办法：
+
+```
+# 查看 nginx ip
+$ docker-compose exec php-fpm ping nginx
+```
+
+在 `docker-compose.yml` 中 `php-fpm` 下的 `extra_hosts` 中补充：
+
+```
+- "api.dev:👆 得到的 nginx ip"
+```
+
 ## Ubuntu 安装 docker docker-compose
 
 > [Get Docker CE for Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
@@ -34,85 +108,6 @@ $ sudo apt-get install docker-ce
 ```
 $ sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 $ sudo chmod +x /usr/local/bin/docker-compose
-```
-
-## 配置项目
-
-本地化环境设置：
-
-```
-cp env-example .env
-```
-
-启动并构建：
-
-```
-docker-compose up --build -d workspace php-worker nginx redis mysql
-
-docker-compose up -d workspace php-worker nginx redis mysql
-```
-
-在上一级目录
-
-```
-mkdir public
-echo "<?php phpinfo(); ?>" > public/index.php
-```
-
-可访问 `http://localhost` 参看效果。
-
-## 相对于原项目的修改
-
-`php-fpm/php56.ini` 修改
-
-```
--memory_limit = 128M
-+memory_limit = 1024M
-
--post_max_size = 8M
-+post_max_size = 128M
-
--upload_max_filesize = 2M
-+upload_max_filesize = 56M
-```
-
-`php-worker/Dockerfile`
-
-在使用 php-fpm 5.6 时有 bug 注释了：
-
-```
--RUN docker-php-ext-install mysqli mbstring pdo pdo_mysql tokenizer xml
--RUN pecl channel-update pecl.php.net && pecl install memcached mcrypt-1.0.1 && docker-php-ext-enable memcached
-+# RUN docker-php-ext-install mysqli mbstring pdo pdo_mysql tokenizer xml
-+# RUN pecl channel-update pecl.php.net && pecl install memcached mcrypt-1.0.1 && docker-php-ext-enable memcached
-```
-
-## 多项目间的通信 issues
-
-> - [Guzzle/Curl connections between multiple projects](https://github.com/laradock/laradock/issues/435)
-
-例如有两个项目：
-
-1. api project `api.test`
-2. web project `web.test` 需要访问 `api.test`
-
-这时候会遇到：
-
-```
-Failed to connect to api.test port 80: Connection refused
-```
-
-解决办法：
-
-```
-# 查看 nginx ip
-$ docker-compose exec php-fpm ping nginx
-```
-
-在 `docker-compose.yml` 中 `php-fpm` 下的 `extra_hosts` 中补充：
-
-```
-- "api.dev:👆 得到的 nginx ip"
 ```
 
 > Reference:
