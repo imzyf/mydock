@@ -46,6 +46,27 @@ ENV PGID ${PGID}
 RUN addgroup -g ${PGID} laradock && \
     adduser -D -G laradock -u ${PUID} laradock
 
+#Install BZ2:
+ARG INSTALL_BZ2=false
+RUN if [ ${INSTALL_BZ2} = true ]; then \
+  apk --update add bzip2-dev; \
+  docker-php-ext-install bz2; \
+fi
+
+#Install GD package:
+ARG INSTALL_GD=false
+RUN if [ ${INSTALL_GD} = true ]; then \
+   apk add --update --no-cache libpng-dev; \
+   docker-php-ext-install gd \
+;fi
+
+#Install GMP package:
+ARG INSTALL_GMP=false
+RUN if [ ${INSTALL_GMP} = true ]; then \
+   apk add --update --no-cache gmp gmp-dev \
+   && docker-php-ext-install gmp \
+;fi
+
 #Install SOAP package:
 ARG INSTALL_SOAP=false
 RUN if [ ${INSTALL_SOAP} = true ]; then \
@@ -82,11 +103,7 @@ RUN set -eux; \
 # Install MySQL Client:
 ARG INSTALL_MYSQL_CLIENT=false
 RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
-    if [ ${LARADOCK_PHP_VERSION} = "7.3" ]; then \
-      apk --update add default-mysql-client \
-    ;else \
       apk --update add mysql-client \
-    ;fi \
 ;fi
 
 # Install FFMPEG:
@@ -153,13 +170,6 @@ RUN if [ $INSTALL_PHALCON = true ]; then \
 ARG INSTALL_GHOSTSCRIPT=false
 RUN if [ $INSTALL_GHOSTSCRIPT = true ]; then \
     apk --update add ghostscript \
-;fi
-
-#Install GMP package:
-ARG INSTALL_GMP=false
-RUN if [ ${INSTALL_GMP} = true ]; then \
-   apk add --update --no-cache gmp gmp-dev \
-   && docker-php-ext-install gmp \
 ;fi
 
 # Install Redis package:
