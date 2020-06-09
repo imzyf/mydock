@@ -2,7 +2,53 @@
 
 使用 Docker 搭建自己的开发环境。
 
-## 环境准备
+## 下载项目
+
+```bash
+git clone https://github.com/imzyf/my-dock.git
+```
+
+## 配置项目
+
+本地化环境设置：
+
+```bash
+cp env-example .env
+
+# OR
+
+cp my-env-example .env
+```
+
+启动并构建：
+
+```bash
+bash sync.sh up workspace php-worker nginx  mysql php-fpm
+
+docker-compose up -d workspace php-worker nginx redis mysql
+
+docker-compose up --build -d workspace php-worker nginx redis mysql
+```
+
+返回上一级目录：
+
+```bash
+cd ..
+mkdir public
+echo "<?php phpinfo(); ?>" > public/index.php
+```
+
+可访问 `http://localhost` 参看效果。
+
+## 快捷命令
+
+进入 workspace bash
+
+```bash
+./sync.sh bash
+```
+
+## docker 安装
 
 > [Get Docker Engine - Community for Ubuntu | docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
 
@@ -34,50 +80,6 @@ $ sudo apt-get install docker-ce
 ```bash
 $ sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 $ sudo chmod +x /usr/local/bin/docker-compose
-```
-
-## 下载项目
-
-```bash
-git clone https://github.com/imzyf/my-dock.git
-```
-
-## 配置项目
-
-本地化环境设置：
-
-```bash
-cp env-example .env
-
-# OR
-
-cp my-env-example .env
-```
-
-启动并构建：
-
-```bash
-docker-compose up -d workspace php-worker nginx redis mysql
-
-docker-compose up --build -d workspace php-worker nginx redis mysql
-```
-
-返回上一级目录：
-
-```
-cd ..
-mkdir public
-echo "<?php phpinfo(); ?>" > public/index.php
-```
-
-可访问 `http://localhost` 参看效果。
-
-## 快捷命令
-
-进入 workspace bash
-
-```
-./sync.sh bash
 ```
 
 ## issues
