@@ -112,6 +112,13 @@ $ docker-compose exec php-fpm ping nginx
 - "api.dev:👆 得到的 nginx ip"
 ```
 
+## shell
+
+```bash
+# install es ik
+docker-compose exec elasticsearch elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.17.6/elasticsearch-analysis-ik-7.17.6.zip
+```
+
 ## References
 
 - [laradock/laradock](https://github.com/laradock/laradock)
